@@ -48,8 +48,9 @@ cookbook_file "/etc/nsswitch.conf" do
   mode 00644
   owner "root"
   group "root"
-  notifies :restart, resources(:service => "nscd"), :immediately
-  notifies :run, resources(:execute => [ "nscd-clear-passwd", "nscd-clear-group" ]), :immediately
+  notifies :run, "execute[nscd-clear-passwd]", :immediately
+  notifies :run, "execute[nscd-clear-group]", :immediately
+  notifies :restart, "service[nscd]", :immediately
 end
 
 %w{ account auth password session }.each do |pam|
@@ -58,7 +59,7 @@ end
     mode 00644
     owner "root"
     group "root"
-    notifies :restart, resources(:service => "ssh"), :delayed
+    notifies :restart, "service[ssh]", :delayed
   end
 end
 
